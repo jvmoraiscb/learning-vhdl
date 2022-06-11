@@ -13,9 +13,9 @@ architecture tb_arch of top_tb is
 begin
     test_unit: entity work.top(top_arch)
         port map(
-            code          => test_code;
-            code_decoder  => test_code_d;
-            pcode         => test_pcode;
+            code          => test_code,
+            code_decoder  => test_code_d,
+            pcode         => test_pcode,
             pcode_encoder => test_pcode_en
         );
         -- test
@@ -40,5 +40,5 @@ begin
             test_code <= "111";
             test_pcode <= "1000";
             wait for 200 ns;
-        end process   
-end tb_arch ;
+        end process;  
+end tb_arch;

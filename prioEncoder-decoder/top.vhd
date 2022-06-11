@@ -13,13 +13,13 @@ architecture top_arch of top is
 begin
     decoder_unit: entity work.decoder_2_4(cond_arch)
         port map(
-            a => code(1 downto 0);
-            en => code(2);
+            a => code(1 downto 0),
+            en => code(2),
             y => code_decoder
         );
     prio_encoder_unit: entity work.prio_encoder(if_arch)
         port map(
-            r => pcode;
+            r => pcode,
             pcode => pcode_encoder
         );
 
