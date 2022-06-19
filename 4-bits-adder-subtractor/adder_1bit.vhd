@@ -5,8 +5,8 @@ entity adder_1bit is
     port(
         a : in std_logic;
         b : in std_logic;
-        ci : in std_logic;
-        co : out std_logic;
+        ci : in std_logic; -- Carry in
+        co : out std_logic; -- Carry out
         s : out std_logic
     );
 end adder_1bit;

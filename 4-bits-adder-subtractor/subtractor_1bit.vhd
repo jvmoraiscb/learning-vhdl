@@ -5,15 +5,15 @@ entity subtractor_1bit is
     port(
         a : in std_logic;
         b : in std_logic;
-        ci : in std_logic;
-        co : out std_logic;
+        bi : in std_logic; -- Borrow in
+        bo : out std_logic; -- Borrow out
         s : out std_logic
     );
 end subtractor_1bit;
 
 architecture subtractor_arch of subtractor_1bit is
 begin
-    co <= (~a and b) or (~a and ci) or (b and ci);
-    s <= (a xor b xor ci);
+    bo <= (not(a) and b) or (not(a) and bi) or (b and bi);
+    s <= (a xor b xor bi);
 
 end subtractor_arch;
