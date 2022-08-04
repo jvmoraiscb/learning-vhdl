@@ -4,10 +4,9 @@ use ieee.numeric_std.all;
 entity fsm_dispHexMux is
    port(
       clk, reset : in  std_logic;
-      hex3, hex2 : in  std_logic_vector(3 downto 0);
-      hex1, hex0 : in  std_logic_vector(3 downto 0);
-      dp_in      : in  std_logic_vector(3 downto 0);
-      an         : out std_logic_vector(3 downto 0);
+      hex_in     : in  std_logic_vector(3 downto 0);
+      dp_in      : in  std_logic;
+      an         : out std_logic_vector(7 downto 0);
       sseg       : out std_logic_vector(7 downto 0)
    );
 end fsm_dispHexMux;
@@ -34,25 +33,17 @@ begin
    q_next <= q_reg + 1;
    -- 2 MSBs of counter to control 4-to-1 multiplexing
    sel <= std_logic_vector(q_reg(N - 1 downto N - 2));
-   process(sel, hex0, hex1, hex2, hex3, dp_in)
+   process(sel, hex_in, dp_in)
    begin
       case sel is
          when "00" =>
-            an(3 downto 0) <= "1110";
-            hex            <= hex0;
-            dp             <= dp_in(0);
-         when "01" =>
-            an(3 downto 0) <= "1101";
-            hex            <= hex1;
-            dp             <= dp_in(1);
-         when "10" =>
-            an(3 downto 0) <= "1011";
-            hex            <= hex2;
-            dp             <= dp_in(2);
+            an(7 downto 0) <= "11111110";
+            hex            <= hex_in;
+            dp             <= dp_in;
          when others =>
-            an(3 downto 0) <= "0111";
-            hex            <= hex3;
-            dp             <= dp_in(3);
+            an(7 downto 0) <= "11111110";
+            hex            <= hex_in;
+            dp             <= dp_in;
       end case;
    end process;
    -- hex-to-7-segment led decoding

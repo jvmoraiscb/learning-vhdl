@@ -14,9 +14,9 @@ end top;
 architecture top_arch of top is
 signal inc, dec   : std_logic;
 signal db_a, db_b : std_logic;  
-signal count      : std_logic_vector(15 downto 0); -- limit is 9999 cars
-signal reg        : unsigned(15 downto 0) := (others=>'0');
-signal reg_next   : unsigned(15 downto 0) := (others=>'0');
+signal count      : std_logic_vector(3 downto 0); -- limit is 9 cars
+signal reg        : unsigned(3 downto 0) := (others=>'0');
+signal reg_next   : unsigned(3 downto 0) := (others=>'0');
 begin
     carPark_unit: entity work.fsm_carPark(moore_arch)
         port map(
@@ -46,15 +46,11 @@ begin
         port map(
             clk   => clk,
             reset => '0',
-            hex3  => count(15 downto 12),
-            hex2  => count(11 downto 8),
-            hex1  => count(7 downto 4),
-            hex0  => count(3 downto 0),
-            dp_in => "1111",
-            an    => an(3 downto 0),
+            hex_in  => count(3 downto 0),
+            dp_in => '1',
+            an    => an(7 downto 0),
             sseg  => sseg
         );
-    an(7 downto 4) <= "1111";
 
     process(clk)
     begin
@@ -63,9 +59,16 @@ begin
         end if;
     end process;
     
-    reg_next <= reg + 1 when (inc = '1')             else
-                reg - 1 when (dec = '1' and reg > 0) else
-                reg;
+    process(inc, dec)
+    begin
+        if(inc = '1') then
+            reg_next <= reg + 1;
+        elsif(dec = '1') then
+            reg_next <= reg - 1;
+        else
+            reg_next <= reg;
+        end if;
+    end process;
     
     count <= std_logic_vector(reg);
 
