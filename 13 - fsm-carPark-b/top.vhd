@@ -5,18 +5,16 @@ use ieee.numeric_std.all;
 entity top is
     port(
         clk  : in std_logic;
-        btn  : in std_logic_vector(1 downto 0);
+        btn  : in std_logic_vector(2 downto 0);
         an   : out std_logic_vector(7 downto 0);
         sseg : out std_logic_vector(7 downto 0)
     );
 end top;
 
 architecture top_arch of top is
-signal inc, dec   : std_logic;
-signal db_a, db_b : std_logic;  
-signal count      : std_logic_vector(3 downto 0); -- limit is 9 cars
-signal reg        : unsigned(3 downto 0) := (others=>'0');
-signal reg_next   : unsigned(3 downto 0) := (others=>'0');
+signal inc, dec         : std_logic;
+signal db_a, db_b, db_c : std_logic;  
+signal counter          : std_logic_vector(7 downto 0); -- limit is 9 cars
 begin
     carPark_unit: entity work.fsm_carPark(moore_arch)
         port map(
@@ -42,34 +40,31 @@ begin
             sw    => btn(1),
             db    => db_b
         );
-    disp_unit: entity work.fsm_dispHexMux(arch)
+     db_c_unit: entity work.fsm_db(arch)
         port map(
             clk   => clk,
             reset => '0',
-            hex_in  => count(3 downto 0),
-            dp_in => '1',
-            an    => an(7 downto 0),
-            sseg  => sseg
+            sw    => btn(2),
+            db    => db_c
         );
-
-    process(clk)
-    begin
-        if(clk'event and clk = '1') then
-            reg <= reg_next;
-        end if;
-    end process;
-    
-    process(inc, dec)
-    begin
-        if(inc = '1') then
-            reg_next <= reg + 1;
-        elsif(dec = '1') then
-            reg_next <= reg - 1;
-        else
-            reg_next <= reg;
-        end if;
-    end process;
-    
-    count <= std_logic_vector(reg);
+    disp_unit: entity work.fsm_dispHexMux(arch)
+        port map(
+            clk     => clk,
+            reset   => '0',
+            hex_in  => counter(3 downto 0),
+            hex_in2 => counter(7 downto 4),
+            dp_in   => "11111111",
+            an      => an(7 downto 0),
+            sseg    => sseg
+        );
+    counter_unit: entity work.reg(arch)
+        port map(
+            clk     => clk,
+            reset   => db_c,
+            enable  => '1',
+            inc     => inc,
+            dec     => dec,
+            counter => counter
+        );
 
 end top_arch;

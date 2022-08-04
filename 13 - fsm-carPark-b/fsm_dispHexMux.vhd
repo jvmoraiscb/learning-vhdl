@@ -5,7 +5,8 @@ entity fsm_dispHexMux is
    port(
       clk, reset : in  std_logic;
       hex_in     : in  std_logic_vector(3 downto 0);
-      dp_in      : in  std_logic;
+      hex_in2   : in  std_logic_vector(3 downto 0);
+      dp_in      : in  std_logic_vector(7 downto 0);
       an         : out std_logic_vector(7 downto 0);
       sseg       : out std_logic_vector(7 downto 0)
    );
@@ -33,17 +34,17 @@ begin
    q_next <= q_reg + 1;
    -- 2 MSBs of counter to control 4-to-1 multiplexing
    sel <= std_logic_vector(q_reg(N - 1 downto N - 2));
-   process(sel, hex_in, dp_in)
+   process(sel, hex_in, hex_in2, dp_in)
    begin
       case sel is
          when "00" =>
             an(7 downto 0) <= "11111110";
             hex            <= hex_in;
-            dp             <= dp_in;
+            dp             <= dp_in(0);
          when others =>
-            an(7 downto 0) <= "11111110";
-            hex            <= hex_in;
-            dp             <= dp_in;
+            an(7 downto 0) <= "11111101";
+            hex            <= hex_in2;
+            dp             <= dp_in(1);
       end case;
    end process;
    -- hex-to-7-segment led decoding
@@ -58,13 +59,7 @@ begin
          "0000010" when "0110",
          "1111000" when "0111",
          "0000000" when "1000",
-         "0010000" when "1001",
-         "0001000" when "1010",   --a
-         "0000011" when "1011",   --b
-         "1000110" when "1100",   --c
-         "0100001" when "1101",   --d
-         "0000110" when "1110",   --e
-         "0001110" when others;   --f
+         "0010000" when others;   --9
    -- decimal point
    sseg(7) <= dp;
 end arch;
